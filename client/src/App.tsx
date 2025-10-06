@@ -15,6 +15,9 @@ import PatientProfile from "@/pages/PatientProfile";
 import PatientCarePlan from "@/pages/PatientCarePlan";
 import CarePlansManagement from "@/pages/CarePlansManagement";
 import CarePlanTemplateForm from "@/pages/CarePlanTemplateForm";
+import Tasks from "@/pages/Tasks";
+import StaffList from "@/pages/StaffList";
+import StaffDetails from "@/pages/StaffDetails";
 import NotFound from "@/pages/not-found";
 
 function ProtectedRoutes() {
@@ -41,11 +44,9 @@ function ProtectedRoutes() {
               <Route path="/care-plans/new-template" component={CarePlanTemplateForm} />
               <Route path="/care-plans/edit-template/:id" component={CarePlanTemplateForm} />
               <Route path="/care-plans" component={CarePlansManagement} />
-              <Route path="/tasks">
-                <div className="flex items-center justify-center h-96">
-                  <p className="text-muted-foreground">Tasks - Coming Soon</p>
-                </div>
-              </Route>
+              <Route path="/tasks" component={Tasks} />
+              <Route path="/staff/:id" component={StaffDetails} />
+              <Route path="/staff" component={StaffList} />
               <Route path="/reports">
                 <div className="flex items-center justify-center h-96">
                   <p className="text-muted-foreground">Reports - Coming Soon</p>
@@ -73,6 +74,8 @@ function Router() {
       <Route path="/care-plans/edit-template/:id" component={ProtectedRoutes} />
       <Route path="/care-plans" component={ProtectedRoutes} />
       <Route path="/tasks" component={ProtectedRoutes} />
+      <Route path="/staff/:id" component={ProtectedRoutes} />
+      <Route path="/staff" component={ProtectedRoutes} />
       <Route path="/reports" component={ProtectedRoutes} />
       <Route component={NotFound} />
     </Switch>

@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, ClipboardList, Calendar, FileText, LogOut } from "lucide-react";
+import { LayoutDashboard, Users, ClipboardList, Calendar, FileText, UserCog, LogOut } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import {
   Sidebar,
@@ -33,6 +33,11 @@ const menuItems = [
     title: "Tasks",
     url: "/tasks",
     icon: Calendar,
+  },
+  {
+    title: "Staff",
+    url: "/staff",
+    icon: UserCog,
   },
   {
     title: "Reports",

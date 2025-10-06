@@ -1,17 +1,22 @@
 import { useLiveQuery } from "dexie-react-hooks";
 import { useRoute, Link } from "wouter";
-import { db } from "@/lib/db";
+import { db, type Task } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ArrowLeft, Phone, Mail, MapPin, User, Calendar, Plus, Edit } from "lucide-react";
-import { format } from "date-fns";
+import { format, isPast, isToday } from "date-fns";
+import { useState } from "react";
+import { TaskDialog } from "@/components/TaskDialog";
 
 export default function PatientProfile() {
   const [match, params] = useRoute("/patient/:id");
   const patientId = params?.id;
+  const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | undefined>();
 
   const patient = useLiveQuery(
     () => patientId ? db.patients.get(patientId) : undefined,
@@ -28,10 +33,48 @@ export default function PatientProfile() {
     [patientId]
   );
 
+  const tasks = useLiveQuery(
+    () => patientId ? db.tasks.where('patientId').equals(patientId).toArray() : [],
+    [patientId]
+  );
+
   const communications = useLiveQuery(
     () => patientId ? db.communications.where('patientId').equals(patientId).toArray() : [],
     [patientId]
   );
+
+  const patients = useLiveQuery(() => db.patients.toArray());
+
+  const handleNewTask = () => {
+    setSelectedTask(undefined);
+    setIsTaskDialogOpen(true);
+  };
+
+  const handleEditTask = (task: Task) => {
+    setSelectedTask(task);
+    setIsTaskDialogOpen(true);
+  };
+
+  const getDueDateBadge = (dueDate: string) => {
+    const date = new Date(dueDate);
+    if (isPast(date) && !isToday(date)) {
+      return <Badge variant="destructive">Overdue</Badge>;
+    }
+    if (isToday(date)) {
+      return <Badge variant="default">Today</Badge>;
+    }
+    return null;
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'Critical': return 'text-red-600 dark:text-red-400';
+      case 'High': return 'text-orange-600 dark:text-orange-400';
+      case 'Medium': return 'text-yellow-600 dark:text-yellow-400';
+      case 'Low': return 'text-green-600 dark:text-green-400';
+      default: return 'text-muted-foreground';
+    }
+  };
 
   if (!match || !patient) {
     return (
@@ -82,7 +125,8 @@ export default function PatientProfile() {
           <TabsTrigger value="overview" data-testid="tab-overview">Overview</TabsTrigger>
           <TabsTrigger value="medical" data-testid="tab-medical">Medical History</TabsTrigger>
           <TabsTrigger value="careplan" data-testid="tab-careplan">Care Plan</TabsTrigger>
-          <TabsTrigger value="communications" data-testid="tab-communications">Notes/Communications</TabsTrigger>
+          <TabsTrigger value="tasks" data-testid="tab-tasks">Tasks</TabsTrigger>
+          <TabsTrigger value="communications" data-testid="tab-communications">Care Notes</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -273,6 +317,70 @@ export default function PatientProfile() {
           )}
         </TabsContent>
 
+        <TabsContent value="tasks" className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h3 className="text-xl font-semibold">Patient Tasks</h3>
+            <Button onClick={handleNewTask} data-testid="button-add-task">
+              <Plus className="h-4 w-4 mr-2" />
+              New Task
+            </Button>
+          </div>
+
+          {tasks && tasks.length > 0 ? (
+            <div className="space-y-3">
+              {tasks.map((task) => (
+                <Card key={task.id} className="hover-elevate" data-testid={`card-task-${task.id}`}>
+                  <CardContent className="pt-6">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2 flex-wrap">
+                          <StatusBadge status={task.status} />
+                          <Badge className={getPriorityColor(task.priority)} data-testid={`badge-priority-${task.id}`}>
+                            {task.priority}
+                          </Badge>
+                          {getDueDateBadge(task.dueDate)}
+                        </div>
+                        <h4 className="font-semibold" data-testid={`text-task-title-${task.id}`}>{task.title}</h4>
+                        <p className="text-sm text-muted-foreground mt-1">{task.description}</p>
+                        <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="h-4 w-4" />
+                            <span>Due: {format(new Date(task.dueDate), 'MMM d, yyyy')}</span>
+                          </div>
+                          {task.assignedTo && (
+                            <div className="flex items-center gap-2">
+                              <User className="h-4 w-4" />
+                              <span>Assigned to: {task.assignedTo}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleEditTask(task)}
+                        data-testid={`button-edit-task-${task.id}`}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <Card>
+              <CardContent className="py-12 text-center">
+                <p className="text-muted-foreground mb-4">No tasks for this patient</p>
+                <Button onClick={handleNewTask} data-testid="button-create-first-task">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create First Task
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
         <TabsContent value="communications" className="space-y-4">
           <div className="flex justify-between items-center">
             <h3 className="text-xl font-semibold">Communications Log</h3>
@@ -311,6 +419,14 @@ export default function PatientProfile() {
           )}
         </TabsContent>
       </Tabs>
+
+      <TaskDialog
+        open={isTaskDialogOpen}
+        onOpenChange={setIsTaskDialogOpen}
+        task={selectedTask}
+        patients={patients || []}
+        defaultPatientId={patientId}
+      />
     </div>
   );
 }

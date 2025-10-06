@@ -83,6 +83,28 @@ export interface Communication {
   author: string;
 }
 
+export type StaffRole = 'Doctor' | 'Nurse' | 'Caregiver';
+export type StaffStatus = 'Active' | 'Inactive' | 'On Leave';
+
+export interface Staff {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  role: StaffRole;
+  specialization?: string;
+  licenseNumber?: string;
+  department?: string;
+  hireDate: string;
+  status: StaffStatus;
+  address?: string;
+  emergencyContact?: string;
+  emergencyPhone?: string;
+  certifications?: string[];
+  notes?: string;
+}
+
 const db = new Dexie('ProjectFrostDB') as Dexie & {
   patients: EntityTable<Patient, 'id'>;
   medicalHistory: EntityTable<MedicalHistory, 'id'>;
@@ -90,6 +112,7 @@ const db = new Dexie('ProjectFrostDB') as Dexie & {
   carePlans: EntityTable<CarePlan, 'id'>;
   tasks: EntityTable<Task, 'id'>;
   communications: EntityTable<Communication, 'id'>;
+  staff: EntityTable<Staff, 'id'>;
 };
 
 db.version(1).stores({
@@ -107,6 +130,16 @@ db.version(2).stores({
   carePlans: 'id, patientId, templateId, status',
   tasks: 'id, patientId, status, dueDate',
   communications: 'id, patientId, date',
+});
+
+db.version(3).stores({
+  patients: 'id, firstName, lastName, status, medicalRecordNumber',
+  medicalHistory: 'id, patientId, type, date',
+  carePlanTemplates: 'id, category, createdDate',
+  carePlans: 'id, patientId, templateId, status',
+  tasks: 'id, patientId, status, dueDate',
+  communications: 'id, patientId, date',
+  staff: 'id, firstName, lastName, role, status, email',
 });
 
 export { db };
