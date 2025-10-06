@@ -1,0 +1,183 @@
+ProjectFrost Care Management Web Application Developer Overview
+
+The portal is for healthcare professionals, specifically doctors like Dr. Evelyn Reed (Cardiologist), to manage patients, create and monitor care plans, and track comprehensive medical histories. This overview details the application's structure by page and the primary action flows.
+
+Portal deployment requirements
+
+The portal is to be hosted on a platform with the following specifications:
+
+    webserver
+
+    Web certificate for HTTPS encryption of sensitive patient data.
+
+    Latest Web deve platforms like Reactjs
+
+    Dedicated IP Highly recommended.
+
+Page 1: Dashboard (/dashboard)
+
+Purpose: The main landing page after login, providing a high-level overview of patient statistics, upcoming tasks, and urgent alerts.
+
+Action Buttons and Navigation:
+
+    View All Alerts (Button): Navigates to a dedicated Alerts Inbox page.
+
+    Task Rows (Clickable Rows): Clicking on any task in the "Upcoming Tasks" table navigates to the relevant patient's profile or a task detail page.
+
+    Primary Navigation Menu: Provides persistent navigation to Patients, Care Plans, Tasks, and Reports.
+
+Page 2: Patient List (/patients)
+
+Purpose: A searchable and filterable table to view and manage all patients.
+
+Action Buttons and Navigation:
+
+    New Patient (Primary Button): Triggers the New Patient Onboarding wizard (modal or page).
+
+    Search by name or ID... (Input): Filters the patient list in real-time based on user input.
+
+    All Statuses ? (Dropdown Filter): Filters the patient list by status (e.g., Active, On-hold, Discharged).
+
+    Patient Name (Clickable Links): Clicking on a patient's name navigates to the Patient Profile - Overview page for that specific patient.
+
+Page 3: New Patient Onboarding (/patients/new)
+
+Purpose: A multi-step wizard for adding a new patient to the system.
+
+Action Buttons and Navigation:
+
+    Cancel (Secondary Button): Discards the form and returns the user to the Patient List page.
+
+    Next: Medical History (Primary Button): Advances the wizard to Step 2 (Medical History).
+
+    Subsequent Steps will have Back and Save Patient buttons.
+
+    Logout (Link): Ends the user session and redirects to the login page.
+
+Page 4: Patient Profile - Overview (/patient/{id})
+
+Purpose: A summary view of a patient's demographic information, medical summary, and care plan. The default tab is Overview.
+
+Action Buttons and Navigation:
+
+    Medical History Tab: Navigates to the Patient Profile - Medical View for the same patient, with the Medical History tab active.
+
+    Care Plan Tab: Navigates to the Care Plan Detail page for this patient.
+
+    Notes/Communications Tab: Navigates to the communications log for this patient.
+
+    + New Entry (Button - contextually located): From here, this likely opens a form to add a new Note or Communication entry.
+
+Page 5: Patient Profile - Medical View (/patient/{id}/medical)
+
+Purpose: A comprehensive, tab-based view of a single patient's complete medical profile.
+
+Action Buttons and Navigation:
+
+    Overview Tab: Navigates back to the Patient Profile - Overview page.
+
+    Care Plan Tab: Navigates to the Care Plan Detail page for this patient.
+
+    Notes/Communications Tab: Navigates to the communications log for this patient.
+
+    + New Entry (Primary Button): Opens a form (likely the Edit Medical History Form) to add a new Diagnosis, Allergy, Medication, or Procedure.
+
+    Edit (Button/Icons next to list items): Clicking an edit icon for a specific medical history item (e.g., "Hypertension") opens the Edit Medical History Form pre-populated with that item's data.
+
+Page 6: Care Plan Detail (/careplan/{id})
+
+Purpose: A detailed view of a specific patient's care plan.
+
+Action Buttons and Navigation:
+
+    Edit Care Plan (Primary Button): Opens an editor for modifying the care plan's goals, interventions, and timeline.
+
+    Goals Tab: Switches the view to display the specific, measurable goals of the care plan.
+
+    Interventions Tab: Switches the view to display the specific interventions and tasks associated with the care plan.
+
+    Primary Navigation Menu: Allows the user to navigate back to the Dashboard or Patients list.
+
+Page 7: Medical History List (/patient/{id}/history)
+
+Purpose: A timeline or list view of a patient's medical records, filterable by type.
+
+Action Buttons and Navigation:
+
+    Filter Tabs (All, Diagnosis, Medication, Procedure): Filters the timeline to show only entries of the selected type.
+
+    Search medical history... (Input): Filters the list based on keywords within the entries.
+
+    Chevron > (Icon on list items): Expands the item to show more details or opens a quick-view modal.
+
+    + New Entry (Button - likely present): Opens the Edit Medical History Form to create a new record.
+
+Page 8: Edit Medical History Form (/medical-history/{id}/edit)
+
+Purpose: A form for adding or editing a medical history entry. This can be accessed from multiple places (e.g., "New Entry" button, "Edit" icon).
+
+Action Buttons and Navigation:
+
+    Cancel (Secondary Button): Closes the form without saving and returns the user to their previous page (e.g., Medical History List or Patient Profile).
+
+    Save Changes (Primary Button): Saves the new or updated medical history entry and returns the user to the previous page.
+
+User Acceptance Testing (UAT) Checklist
+
+User Authentication & Session Management
+
+    Create a Doctor/Physician user account for test purposes.
+
+    Log in with the new credentials.
+
+    Test password reset functionality via "Forgot Password" link.
+
+    Log out and attempt to access a protected page (e.g., /dashboard); ensure redirect to login.
+
+Patient Management
+
+    From the Patient List, use the New Patient button to complete the onboarding wizard.
+
+    Verify the new patient appears in the Patient List with the correct status.
+
+    Search for the patient by name and ID in the Patient List.
+
+    Filter the Patient List by different statuses.
+
+Medical History & Data Integrity
+
+    Navigate to a Patient Profile - Medical View.
+
+    Use the + New Entry button to add a new Diagnosis. Verify it appears in the list.
+
+    Edit an existing medical history entry and verify the changes are saved.
+
+    On the Medical History List page, use the filter tabs (Diagnosis, Medication) and search bar to verify functionality.
+
+    Attach a file in the Edit Medical History Form and verify it is associated with the entry.
+
+Care Plan Management
+
+    Navigate to a Care Plan Detail page.
+
+    Verify that the Overview, Goals, and Interventions tabs display the correct information.
+
+    Click the Edit Care Plan button and verify that saving changes updates the view correctly.
+
+Authorization
+
+    Ensure all pages require authentication; redirect to login if session is invalid.
+
+    After logout, verify that browser-cached links to application pages force a redirect to the login screen.
+
+Additional Technical Notes
+
+    Design System: Establish a consistent color palette, typography scale (e.g., for headers, body text), and spacing system (e.g., 8px base unit).
+
+    Component Library: The application requires reusable components for: Cards, Data Tables, Tabs, Badges, Buttons (Primary, Secondary, Text), Form Inputs, and Modals.
+
+    State Management: Consider state for user sessions, patient data caching, and form management, especially for the multi-step onboarding.
+
+    Icons: Plan to integrate a standard icon set for actions (search, edit, add, chevrons, alerts) and medical concepts (pill, heart, syringe).
+
+    Responsiveness: All layouts, particularly the Dashboard metrics grid and data tables, must be fluid and adapt to tablet and mobile views.
