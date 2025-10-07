@@ -18,6 +18,7 @@ import CarePlanTemplateForm from "@/pages/CarePlanTemplateForm";
 import Tasks from "@/pages/Tasks";
 import StaffList from "@/pages/StaffList";
 import StaffDetails from "@/pages/StaffDetails";
+import Rota from "@/pages/Rota";
 import NotFound from "@/pages/not-found";
 
 function ProtectedRoutes() {
@@ -45,6 +46,7 @@ function ProtectedRoutes() {
               <Route path="/care-plans/edit-template/:id" component={CarePlanTemplateForm} />
               <Route path="/care-plans" component={CarePlansManagement} />
               <Route path="/tasks" component={Tasks} />
+              <Route path="/rota" component={Rota} />
               <Route path="/staff/:id" component={StaffDetails} />
               <Route path="/staff" component={StaffList} />
               <Route path="/reports">
@@ -74,6 +76,7 @@ function Router() {
       <Route path="/care-plans/edit-template/:id" component={ProtectedRoutes} />
       <Route path="/care-plans" component={ProtectedRoutes} />
       <Route path="/tasks" component={ProtectedRoutes} />
+      <Route path="/rota" component={ProtectedRoutes} />
       <Route path="/staff/:id" component={ProtectedRoutes} />
       <Route path="/staff" component={ProtectedRoutes} />
       <Route path="/reports" component={ProtectedRoutes} />

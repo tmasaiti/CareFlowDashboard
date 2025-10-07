@@ -35,6 +35,11 @@ const menuItems = [
     icon: Calendar,
   },
   {
+    title: "Rota",
+    url: "/rota",
+    icon: Calendar,
+  },
+  {
     title: "Staff",
     url: "/staff",
     icon: UserCog,
