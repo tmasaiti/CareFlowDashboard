@@ -142,4 +142,14 @@ db.version(3).stores({
   staff: 'id, firstName, lastName, role, status, email',
 });
 
+db.version(4).stores({
+  patients: 'id, firstName, lastName, status, medicalRecordNumber',
+  medicalHistory: 'id, patientId, type, date',
+  carePlanTemplates: 'id, category, createdDate',
+  carePlans: 'id, patientId, templateId, status',
+  tasks: 'id, patientId, status, dueDate, assignedTo',
+  communications: 'id, patientId, date',
+  staff: 'id, firstName, lastName, role, status, email',
+});
+
 export { db };
