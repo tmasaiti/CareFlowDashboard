@@ -7,8 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Mail, Phone, MapPin, Calendar, Award, Building, Edit, Trash2, UserCircle } from "lucide-react";
-import { format } from "date-fns";
+import { ArrowLeft, Mail, Phone, MapPin, Calendar, Award, Building, Edit, Trash2, UserCircle, Clock } from "lucide-react";
+import { format, isFuture, isToday } from "date-fns";
 import { StaffEditDialog } from "@/components/StaffEditDialog";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -39,6 +39,11 @@ export default function StaffDetails() {
   const assignedTasks = useLiveQuery(
     () => staff ? db.tasks.where('assignedTo').equals(`${staff.firstName} ${staff.lastName}`).toArray() : [],
     [staff]
+  );
+
+  const assignedShifts = useLiveQuery(
+    () => staffId ? db.shifts.where('staffId').equals(staffId).toArray() : [],
+    [staffId]
   );
 
   if (!match || !staff) {
@@ -137,6 +142,7 @@ export default function StaffDetails() {
         <TabsList>
           <TabsTrigger value="overview" data-testid="tab-overview">Overview</TabsTrigger>
           <TabsTrigger value="professional" data-testid="tab-professional">Professional Info</TabsTrigger>
+          <TabsTrigger value="shifts" data-testid="tab-shifts">Shifts</TabsTrigger>
           <TabsTrigger value="tasks" data-testid="tab-tasks">Assigned Tasks</TabsTrigger>
         </TabsList>
 
@@ -253,6 +259,104 @@ export default function StaffDetails() {
               </Card>
             )}
           </div>
+        </TabsContent>
+
+        <TabsContent value="shifts" className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h3 className="text-xl font-semibold">Assigned Shifts</h3>
+            <Badge variant="secondary" data-testid="badge-shift-count">
+              {assignedShifts?.length || 0} shifts
+            </Badge>
+          </div>
+
+          {assignedShifts && assignedShifts.length > 0 ? (
+            <div className="space-y-3">
+              {assignedShifts
+                .sort((a, b) => {
+                  const dateA = new Date(`${a.date}T${a.startTime}`);
+                  const dateB = new Date(`${b.date}T${b.startTime}`);
+                  return dateB.getTime() - dateA.getTime();
+                })
+                .map((shift) => {
+                  const shiftDate = new Date(shift.date);
+                  const isUpcoming = isFuture(shiftDate) || isToday(shiftDate);
+                  
+                  return (
+                    <Card key={shift.id} className="hover-elevate" data-testid={`shift-card-${shift.id}`}>
+                      <CardContent className="pt-6">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Badge 
+                                variant={shift.status === 'Completed' ? 'outline' : 'default'}
+                                data-testid={`badge-shift-status-${shift.id}`}
+                              >
+                                {shift.status}
+                              </Badge>
+                              <Badge 
+                                variant="secondary"
+                                data-testid={`badge-shift-type-${shift.id}`}
+                              >
+                                {shift.shiftType}
+                              </Badge>
+                              {isUpcoming && shift.status === 'Scheduled' && (
+                                <Badge variant="default">Upcoming</Badge>
+                              )}
+                            </div>
+                            
+                            <div className="space-y-2">
+                              <div className="flex items-center gap-2">
+                                <Calendar className="h-4 w-4 text-muted-foreground" />
+                                <span className="font-semibold" data-testid={`text-shift-date-${shift.id}`}>
+                                  {format(shiftDate, 'EEEE, MMMM d, yyyy')}
+                                </span>
+                              </div>
+                              
+                              <div className="flex items-center gap-2">
+                                <Clock className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-sm text-muted-foreground" data-testid={`text-shift-time-${shift.id}`}>
+                                  {shift.startTime} - {shift.endTime}
+                                </span>
+                              </div>
+
+                              {shift.patientName && (
+                                <div className="flex items-center gap-2">
+                                  <UserCircle className="h-4 w-4 text-muted-foreground" />
+                                  <span className="text-sm" data-testid={`text-shift-patient-${shift.id}`}>
+                                    Patient: {shift.patientName}
+                                  </span>
+                                </div>
+                              )}
+
+                              {shift.location && (
+                                <div className="flex items-center gap-2">
+                                  <MapPin className="h-4 w-4 text-muted-foreground" />
+                                  <span className="text-sm text-muted-foreground" data-testid={`text-shift-location-${shift.id}`}>
+                                    {shift.location}
+                                  </span>
+                                </div>
+                              )}
+
+                              {shift.notes && (
+                                <p className="text-sm text-muted-foreground mt-2" data-testid={`text-shift-notes-${shift.id}`}>
+                                  {shift.notes}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+            </div>
+          ) : (
+            <Card>
+              <CardContent className="py-12 text-center">
+                <p className="text-muted-foreground" data-testid="text-no-shifts">No shifts assigned</p>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
         <TabsContent value="tasks" className="space-y-4">
