@@ -76,8 +76,39 @@ A centralized area for administrative control, following the same tabbed princip
 		DB Backup settings: broader backup settings
 		Audit trail: Date and time-stamped for all system actions
 
-5. Key Non-Functional Requirements
+5. Error Handling & Logging Protocol
+To ensure efficient debugging and avoid token-wasting loops, the following mandatory procedure must be implemented for every error or issue encountered.
+A. Mandatory Log File Creation
 
+    A file named fixes.txt must be created and maintained in the project's root directory.
+    Every single error, issue, or user feedback must be logged as a new, timestamped entry in this file.
+
+B. Structured Log Entry Format
+Each entry in fixes.txt must follow this exact structure:
+text
+
+[YYYY-MM-DD HH:MM:SS] - ERROR_ID: <Brief Descriptive Title>
+- SOURCE: <User Highlighted / System Encountered during [Task Name]>
+- PROBLEM: <Clear, concise description of the erroneous behavior or request.>
+- SCOPE ASSESSMENT: [GLOBAL/LOCAL] - <Justification: Why is this a global pattern issue or a local, isolated bug?>
+- ACTION TAKEN: <Detailed, step-by-step description of the exact fix implemented.>
+- VERIFICATION: <Statement confirming the issue is resolved and the expected behavior now occurs.>
+---
+
+C. Critical Workflow Rules to Prevent Loops
+    Analysis Before Action: Upon encountering an error, you must first pause and analyze its root cause. Do not immediately start making code changes.
+	Consult fixes.txt to see if the problem has been encountered before and effective fixes applied previously
+    Scope Assessment is Mandatory: You must explicitly classify the error as:
+        GLOBAL: If the issue stems from a foundational component (e.g., the main layout, a shared React component, a core CSS class, a base API function). Fixing it here will apply to all modules.
+        LOCAL: If the issue is confined to a single, specific feature, page, or function.
+    Plan and Execute the Fix Holistically:
+        For a GLOBAL issue, you must identify all other areas in the codebase that might be affected by the same problem and fix them in the same action. Update the log entry's ACTION TAKEN to reflect this comprehensive fix.
+        For a LOCAL issue, apply a targeted fix.
+
+    Single Attempt Principle: After implementing the fix, you must verify its success. If the issue is not resolved, do not enter a blind debugging loop. Re-analyze the problem, update the fixes.txt log with the new findings, and then proceed with a revised, informed fix.
+    Clarity Over Speed: A well-documented, correct fix is always preferable to a quick, poorly-understood one that may cause further issues.
+
+6. Key Non-Functional Requirements
     CQC Compliance: Data models and UI must be designed with CQC evidence requirements in mind from the outset. The "CQC Compliance" tab is a critical component, not an afterthought.
     Usability: The interface must be clear and easy to navigate for users with varying levels of technical skill.
     Scalability: The architecture should support the addition of new modules in the future by following the established pattern.
