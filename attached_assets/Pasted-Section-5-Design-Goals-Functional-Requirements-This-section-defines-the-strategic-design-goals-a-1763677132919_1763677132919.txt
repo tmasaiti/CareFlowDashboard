@@ -1,0 +1,121 @@
+Section 5 — Design Goals & Functional Requirements
+This section defines the strategic design goals and the functional requirements your platform must
+satisfy to operate as a credible, next-generation replacement for systems like RoundSys and TagCare
+(minus payroll). It draws on (1) sector pain points, (2) regulatory expectations, and (3) the literature
+review. It sets the foundation for the technical architecture that will follow.
+5.1 Strategic Design Goals
+5.1.1 Build a Unified Operational SpineThe platform must eliminate fragmentation by consolidating scheduling, care plans, eMAR, task lists,
+communication, evidence capture, and reporting into a single coherent ecosystem accessible across
+web and mobile. The goal is to become the single source of truth for all operational, clinical, and
+compliance data.
+5.1.2 Prioritise Real-Time Visibility
+Managers should be able to see the live status of every visit, task, alert, incident, and medication
+round as it happens. Real-time oversight is essential for safeguarding, compliance, and timely
+escalation.
+5.1.3 Reduce Administrative Burden
+The system must aggressively automate:
+• care plan updates,
+• daily notes and task generation,
+• alert routing,
+• evidence compilation for audits,
+• rota adjustments,
+• missed-visit escalation.
+A key success measure: reduce office workload and duplicated data entry by 40–60%.
+5.1.4 Deliver a Low-Friction, Carer-Friendly Mobile Experience
+Carers operate under time pressure, often with limited technical confidence. The mobile app must
+be:
+• intuitive within the first 30 minutes of use,
+• offline-capable,
+• fast to load,
+• supportive rather than punitive,
+• designed for one-handed use during visits.
+5.1.5 Support CQC Compliance by Design
+The platform must embed compliance into workflows:
+• mandatory task prompts,
+• automated risk review reminders,
+• digital signatures,
+• date/time-stamped logs,
+• complete audit trails,
+• evidence dashboards aligned with the CQC’s key questions and quality statements.5.1.6 Enable Data-Driven Decision Making
+The system should produce actionable intelligence: trends in deterioration, medication compliance,
+missed tasks, visit punctuality, carer performance, and capacity utilisation.
+5.1.7 Architect for Scale and Interoperability
+Digitisation across the UK care sector is rising; your system must anticipate:
+• growth from 10 carers → 500 carers → multi-branch structures,
+• standardised interfaces (API-first, health-data export),
+• integration potential with NHS systems,
+• multi-tenancy options for enterprise clients.
+5.1.8 Maintain Strong Privacy & Safety Controls
+Home care data is highly sensitive. The system must embed:
+• GDPR compliance,
+• UK data residency,
+• fine-grained permissions,
+• encryption,
+• secure audit logging,
+• structured consent management for client/family access.
+5.2 Core Functional Requirements
+Below are the essential modules your platform must implement.
+5.2.1 Client & Care Plan Management
+• Create and maintain individual service-user profiles.
+• Dynamic, person-centred care plans with goals, preferences, tasks, and risks.
+• Version tracking with full history and audit logs.
+• Digital signatures (client/representative/carer).
+• Automated prompts for risk reviews, care plan updates, and assessments.
+Outcome: consistent and compliant person-centred documentation that can be reviewed remotely
+and updated in real time.
+5.2.2 Visit Scheduling & Rota Generation
+• Create weekly/monthly rotas with drag-and-drop interface.• Conflict detection (double bookings, insufficient travel time).
+• Automatic distribution of tasks per visit.
+• Push notifications to carers for rota changes.
+• Optional route optimisation engine (phase 2).
+Outcome: fewer missed or late visits, reduced rota errors, and improved workforce utilisation.
+5.2.3 Carer Mobile Application
+• Secure login (Cognito or equivalent).
+• Visit check-in/out (GPS + optional QR/NFC).
+• Task-by-task checklist for each visit.
+• Voice-to-text notes, photo evidence, incident reporting.
+• Offline-first design with local queueing.
+• Medication administration recording (non-payroll version still needs eMAR).
+• Message centre for updates, policies, and urgent alerts.
+Outcome: a simple but powerful digital companion that reduces time spent on notes and improves
+record accuracy.
+5.2.4 eMAR (Electronic Medication Administration Records)
+• Medication schedules linked to the care plan.
+• Prompted administration workflow (dose, route, notes).
+• Missed-dose escalation.
+• PRN protocols and decision support.
+• Barcode or NFC medication verification (phase 2).
+Outcome: reduced medication errors, clear audit trails, and compliance with safe medication
+practices.
+5.2.5 Alerts, Incidents & Safeguarding
+• Automatic alerts for missed visits, missed medications, falls, deterioration patterns, or
+behavioural changes.
+• Full incident reporting module with photos, body maps, custom fields.
+• Manager escalation rules and notifications.
+Outcome: faster response to risk, improved safety, and reduced safeguarding incidents.5.2.6 Document Management & Policies
+• Central repository for all documents (S3-backed).
+• Policy distribution with read receipts.
+• Expiry reminders for training, certificates, and compliance documents.
+Outcome: organised governance, easier audits, and protection from non-compliance penalties.
+5.2.7 Reporting, Analytics & Dashboards
+• Real-time dashboards for visits, incidents, care tasks, medication compliance, and staffing
+capacity.
+• Exportable reports for commissioners and CQC.
+• Longitudinal charts showing trends in notes, risks, delays, incidents, and outcomes.
+Outcome: deep managerial oversight and proactive service improvement.
+5.2.8 Communication & Family Engagement (Optional Phase)
+• Family portal for viewing visit logs, wellbeing notes, and photos.
+• Secure messaging with audit trails.
+• Consent-based access controls.
+Outcome: increased transparency and trust with families.
+5.2.9 Admin Features & Workflow Automation
+• Carer onboarding hub (documents, training, DBS reminders).
+• Automated email/SMS notifications.
+• Configurable permissions and multi-role support.
+• Multi-branch management (enterprise version).
+• No payroll (explicit requirement).
+5.2.10 Interoperability & API Requirements
+• RESTful API with token-based authentication.
+• Hooks for data export to NHS/ICS systems.
+• Webhooks for visit events, medication events, and incidents.• Modular microservice-compatible design.
+Outcome: system can extend into future integrations without re-architecting
