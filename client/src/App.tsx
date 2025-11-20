@@ -19,6 +19,7 @@ import Tasks from "@/pages/Tasks";
 import StaffList from "@/pages/StaffList";
 import StaffDetails from "@/pages/StaffDetails";
 import Rota from "@/pages/Rota";
+import CQCCompliance from "@/pages/CQCCompliance";
 import NotFound from "@/pages/not-found";
 
 function ProtectedRoutes() {
@@ -49,6 +50,7 @@ function ProtectedRoutes() {
               <Route path="/rota" component={Rota} />
               <Route path="/staff/:id" component={StaffDetails} />
               <Route path="/staff" component={StaffList} />
+              <Route path="/cqc-compliance" component={CQCCompliance} />
               <Route path="/reports">
                 <div className="flex items-center justify-center h-96">
                   <p className="text-muted-foreground">Reports - Coming Soon</p>
@@ -79,6 +81,7 @@ function Router() {
       <Route path="/rota" component={ProtectedRoutes} />
       <Route path="/staff/:id" component={ProtectedRoutes} />
       <Route path="/staff" component={ProtectedRoutes} />
+      <Route path="/cqc-compliance" component={ProtectedRoutes} />
       <Route path="/reports" component={ProtectedRoutes} />
       <Route component={NotFound} />
     </Switch>

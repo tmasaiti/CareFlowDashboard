@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, ClipboardList, Calendar, FileText, UserCog, LogOut } from "lucide-react";
+import { LayoutDashboard, Users, ClipboardList, Calendar, FileText, UserCog, LogOut, Shield } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import {
   Sidebar,
@@ -43,6 +43,11 @@ const menuItems = [
     title: "Staff",
     url: "/staff",
     icon: UserCog,
+  },
+  {
+    title: "CQC Compliance",
+    url: "/cqc-compliance",
+    icon: Shield,
   },
   {
     title: "Reports",
