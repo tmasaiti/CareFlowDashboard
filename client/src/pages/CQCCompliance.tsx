@@ -18,17 +18,43 @@ import {
   Users,
   AlertCircle
 } from "lucide-react";
-import { useLiveQuery } from "dexie-react-hooks";
 import { format } from "date-fns";
 
 export default function CQCCompliance() {
-  const riskAssessments = useLiveQuery(() => db.riskAssessments.toArray());
-  const incidents = useLiveQuery(() => db.safeguardingIncidents.toArray());
-  const evidence = useLiveQuery(() => db.complianceEvidence.toArray());
-  const auditLogs = useLiveQuery(() => db.auditLogs.orderBy('timestamp').reverse().limit(50).toArray());
-  const policies = useLiveQuery(() => db.policies.toArray());
-  const trainingRecords = useLiveQuery(() => db.trainingRecords.toArray());
-  const policyAcknowledgments = useLiveQuery(() => db.policyAcknowledgments.toArray());
+  const { data: riskAssessments } = useQuery({
+    queryKey: ['/compliance/risk-assessments'],
+    queryFn: async () => await db.riskAssessments.toArray()
+  });
+
+  const { data: incidents } = useQuery({
+    queryKey: ['/compliance/incidents'],
+    queryFn: async () => await db.safeguardingIncidents.toArray()
+  });
+
+  const { data: evidence } = useQuery({
+    queryKey: ['/compliance/evidence'],
+    queryFn: async () => await db.complianceEvidence.toArray()
+  });
+
+  const { data: auditLogs } = useQuery({
+    queryKey: ['/compliance/audit-logs'],
+    queryFn: async () => await db.auditLogs.orderBy('timestamp').reverse().limit(50).toArray()
+  });
+
+  const { data: policies } = useQuery({
+    queryKey: ['/compliance/policies'],
+    queryFn: async () => await db.policies.toArray()
+  });
+
+  const { data: trainingRecords } = useQuery({
+    queryKey: ['/compliance/training'],
+    queryFn: async () => await db.trainingRecords.toArray()
+  });
+
+  const { data: policyAcknowledgments } = useQuery({
+    queryKey: ['/compliance/policy-acknowledgments'],
+    queryFn: async () => await db.policyAcknowledgments.toArray()
+  });
 
   const criticalRisks = riskAssessments?.filter(r => r.riskLevel === 'Critical' || r.riskLevel === 'High') || [];
   const overdueRisks = riskAssessments?.filter(r => {
@@ -110,89 +136,89 @@ export default function CQCCompliance() {
       </div>
 
       {(criticalRisks.length > 0 || openIncidents.length > 0 || overdueRisks.length > 0) && (
-        <Alert variant="destructive">
+        <Alert variant="destructive" data-testid="alert-action-required">
           <AlertTriangle className="h-4 w-4" />
-          <AlertDescription>
+          <AlertDescription data-testid="text-alert-description">
             <span className="font-semibold">Action Required:</span>
             {' '}
-            {criticalRisks.length > 0 && `${criticalRisks.length} critical risk(s). `}
-            {openIncidents.length > 0 && `${openIncidents.length} open incident(s). `}
-            {overdueRisks.length > 0 && `${overdueRisks.length} overdue risk review(s).`}
+            {criticalRisks.length > 0 && <span data-testid="text-critical-risks">{criticalRisks.length} critical risk(s). </span>}
+            {openIncidents.length > 0 && <span data-testid="text-open-incidents">{openIncidents.length} open incident(s). </span>}
+            {overdueRisks.length > 0 && <span data-testid="text-overdue-risks">{overdueRisks.length} overdue risk review(s).</span>}
           </AlertDescription>
         </Alert>
       )}
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-        <Card>
+        <Card data-testid="card-metric-safe">
           <CardHeader className="flex flex-row items-center justify-between gap-1 space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Safe</CardTitle>
+            <CardTitle className="text-sm font-medium" data-testid="text-metric-title-safe">Safe</CardTitle>
             <Shield className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold" data-testid="text-safe-percentage">
               {getCompliancePercentage(complianceMetrics.safe.compliant, complianceMetrics.safe.total)}%
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground" data-testid="text-safe-details">
               {complianceMetrics.safe.compliant} of {complianceMetrics.safe.total} compliant
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card data-testid="card-metric-effective">
           <CardHeader className="flex flex-row items-center justify-between gap-1 space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Effective</CardTitle>
+            <CardTitle className="text-sm font-medium" data-testid="text-metric-title-effective">Effective</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold" data-testid="text-effective-percentage">
               {getCompliancePercentage(complianceMetrics.effective.compliant, complianceMetrics.effective.total)}%
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground" data-testid="text-effective-details">
               {complianceMetrics.effective.compliant} of {complianceMetrics.effective.total} compliant
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card data-testid="card-metric-caring">
           <CardHeader className="flex flex-row items-center justify-between gap-1 space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Caring</CardTitle>
+            <CardTitle className="text-sm font-medium" data-testid="text-metric-title-caring">Caring</CardTitle>
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold" data-testid="text-caring-percentage">
               {getCompliancePercentage(complianceMetrics.caring.compliant, complianceMetrics.caring.total)}%
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground" data-testid="text-caring-details">
               {complianceMetrics.caring.compliant} of {complianceMetrics.caring.total} compliant
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card data-testid="card-metric-responsive">
           <CardHeader className="flex flex-row items-center justify-between gap-1 space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Responsive</CardTitle>
+            <CardTitle className="text-sm font-medium" data-testid="text-metric-title-responsive">Responsive</CardTitle>
             <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold" data-testid="text-responsive-percentage">
               {getCompliancePercentage(complianceMetrics.responsive.compliant, complianceMetrics.responsive.total)}%
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground" data-testid="text-responsive-details">
               {complianceMetrics.responsive.compliant} of {complianceMetrics.responsive.total} compliant
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card data-testid="card-metric-wellled">
           <CardHeader className="flex flex-row items-center justify-between gap-1 space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Well-led</CardTitle>
+            <CardTitle className="text-sm font-medium" data-testid="text-metric-title-wellled">Well-led</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold" data-testid="text-wellled-percentage">
               {getCompliancePercentage(complianceMetrics.wellLed.compliant, complianceMetrics.wellLed.total)}%
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground" data-testid="text-wellled-details">
               {complianceMetrics.wellLed.compliant} of {complianceMetrics.wellLed.total} compliant
             </p>
           </CardContent>

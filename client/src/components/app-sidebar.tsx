@@ -48,6 +48,7 @@ const menuItems = [
     title: "CQC Compliance",
     url: "/cqc-compliance",
     icon: Shield,
+    testId: "link-cqc-compliance",
   },
   {
     title: "Reports",
