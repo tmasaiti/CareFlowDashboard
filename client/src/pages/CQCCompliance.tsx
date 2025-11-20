@@ -254,9 +254,9 @@ export default function CQCCompliance() {
             </CardHeader>
             <CardContent>
               {overdueRisks.length > 0 && (
-                <Alert variant="destructive" className="mb-4">
+                <Alert variant="destructive" className="mb-4" data-testid="alert-overdue-risks">
                   <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>
+                  <AlertDescription data-testid="text-overdue-risks-count">
                     {overdueRisks.length} risk assessment(s) overdue for review
                   </AlertDescription>
                 </Alert>
@@ -266,25 +266,25 @@ export default function CQCCompliance() {
                   <div key={risk.id} className="flex items-start justify-between p-4 border rounded-lg" data-testid={`card-risk-${risk.id}`}>
                     <div className="space-y-1 flex-1">
                       <div className="flex items-center gap-2">
-                        <h4 className="font-semibold">{risk.patientName}</h4>
-                        <Badge variant={getRiskLevelColor(risk.riskLevel) as any}>
+                        <h4 className="font-semibold" data-testid={`text-risk-patient-${risk.id}`}>{risk.patientName}</h4>
+                        <Badge variant={getRiskLevelColor(risk.riskLevel) as any} data-testid={`badge-risk-level-${risk.id}`}>
                           {risk.riskLevel}
                         </Badge>
-                        <Badge variant="outline">{risk.riskType}</Badge>
+                        <Badge variant="outline" data-testid={`badge-risk-type-${risk.id}`}>{risk.riskType}</Badge>
                       </div>
-                      <p className="text-sm text-muted-foreground">{risk.description}</p>
+                      <p className="text-sm text-muted-foreground" data-testid={`text-risk-description-${risk.id}`}>{risk.description}</p>
                       <div className="flex gap-4 text-xs text-muted-foreground">
-                        <span>Assessed by: {risk.assessedBy}</span>
-                        <span>Next review: {format(new Date(risk.nextReviewDate), 'PPP')}</span>
+                        <span data-testid={`text-risk-assessor-${risk.id}`}>Assessed by: {risk.assessedBy}</span>
+                        <span data-testid={`text-risk-review-date-${risk.id}`}>Next review: {format(new Date(risk.nextReviewDate), 'PPP')}</span>
                       </div>
                     </div>
-                    <Badge variant={getStatusColor(risk.status) as any}>
+                    <Badge variant={getStatusColor(risk.status) as any} data-testid={`badge-risk-status-${risk.id}`}>
                       {risk.status}
                     </Badge>
                   </div>
                 ))}
                 {(!riskAssessments || riskAssessments.length === 0) && (
-                  <p className="text-center text-muted-foreground py-8">No risk assessments recorded</p>
+                  <p className="text-center text-muted-foreground py-8" data-testid="text-no-risks">No risk assessments recorded</p>
                 )}
               </div>
             </CardContent>
@@ -305,28 +305,28 @@ export default function CQCCompliance() {
                   <div key={incident.id} className="flex items-start justify-between p-4 border rounded-lg" data-testid={`card-incident-${incident.id}`}>
                     <div className="space-y-1 flex-1">
                       <div className="flex items-center gap-2">
-                        <h4 className="font-semibold">{incident.incidentType}</h4>
-                        <Badge variant={getRiskLevelColor(incident.severity) as any}>
+                        <h4 className="font-semibold" data-testid={`text-incident-type-${incident.id}`}>{incident.incidentType}</h4>
+                        <Badge variant={getRiskLevelColor(incident.severity) as any} data-testid={`badge-incident-severity-${incident.id}`}>
                           {incident.severity}
                         </Badge>
                         {incident.escalatedToCQC && (
-                          <Badge variant="destructive">CQC Escalated</Badge>
+                          <Badge variant="destructive" data-testid={`badge-incident-escalated-${incident.id}`}>CQC Escalated</Badge>
                         )}
                       </div>
-                      <p className="text-sm text-muted-foreground">{incident.description}</p>
+                      <p className="text-sm text-muted-foreground" data-testid={`text-incident-description-${incident.id}`}>{incident.description}</p>
                       <div className="flex gap-4 text-xs text-muted-foreground">
-                        <span>Incident: {format(new Date(incident.incidentDate), 'PPP')}</span>
-                        <span>Reported by: {incident.reportedBy}</span>
-                        {incident.patientName && <span>Patient: {incident.patientName}</span>}
+                        <span data-testid={`text-incident-date-${incident.id}`}>Incident: {format(new Date(incident.incidentDate), 'PPP')}</span>
+                        <span data-testid={`text-incident-reporter-${incident.id}`}>Reported by: {incident.reportedBy}</span>
+                        {incident.patientName && <span data-testid={`text-incident-patient-${incident.id}`}>Patient: {incident.patientName}</span>}
                       </div>
                     </div>
-                    <Badge variant={getStatusColor(incident.status) as any}>
+                    <Badge variant={getStatusColor(incident.status) as any} data-testid={`badge-incident-status-${incident.id}`}>
                       {incident.status}
                     </Badge>
                   </div>
                 ))}
                 {(!incidents || incidents.length === 0) && (
-                  <p className="text-center text-muted-foreground py-8">No incidents recorded</p>
+                  <p className="text-center text-muted-foreground py-8" data-testid="text-no-incidents">No incidents recorded</p>
                 )}
               </div>
             </CardContent>
@@ -348,26 +348,26 @@ export default function CQCCompliance() {
                     <div className="space-y-1 flex-1">
                       <div className="flex items-center gap-2">
                         <FileCheck className="h-4 w-4 text-muted-foreground" />
-                        <h4 className="font-semibold">{item.title}</h4>
-                        <Badge variant="outline">{item.evidenceType}</Badge>
-                        <Badge variant="outline">{item.complianceArea}</Badge>
+                        <h4 className="font-semibold" data-testid={`text-evidence-title-${item.id}`}>{item.title}</h4>
+                        <Badge variant="outline" data-testid={`badge-evidence-type-${item.id}`}>{item.evidenceType}</Badge>
+                        <Badge variant="outline" data-testid={`badge-evidence-area-${item.id}`}>{item.complianceArea}</Badge>
                       </div>
-                      <p className="text-sm text-muted-foreground">{item.description}</p>
+                      <p className="text-sm text-muted-foreground" data-testid={`text-evidence-description-${item.id}`}>{item.description}</p>
                       <div className="flex gap-4 text-xs text-muted-foreground">
-                        <span>Uploaded: {format(new Date(item.uploadDate), 'PPP')}</span>
-                        <span>By: {item.uploadedBy}</span>
+                        <span data-testid={`text-evidence-upload-date-${item.id}`}>Uploaded: {format(new Date(item.uploadDate), 'PPP')}</span>
+                        <span data-testid={`text-evidence-uploader-${item.id}`}>By: {item.uploadedBy}</span>
                         {item.expiryDate && (
-                          <span>Expires: {format(new Date(item.expiryDate), 'PPP')}</span>
+                          <span data-testid={`text-evidence-expiry-${item.id}`}>Expires: {format(new Date(item.expiryDate), 'PPP')}</span>
                         )}
                       </div>
                     </div>
-                    <Badge variant={getStatusColor(item.status) as any}>
+                    <Badge variant={getStatusColor(item.status) as any} data-testid={`badge-evidence-status-${item.id}`}>
                       {item.status}
                     </Badge>
                   </div>
                 ))}
                 {(!evidence || evidence.length === 0) && (
-                  <p className="text-center text-muted-foreground py-8">No evidence uploaded</p>
+                  <p className="text-center text-muted-foreground py-8" data-testid="text-no-evidence">No evidence uploaded</p>
                 )}
               </div>
             </CardContent>
@@ -388,21 +388,21 @@ export default function CQCCompliance() {
                   <div key={log.id} className="flex items-center gap-4 p-3 border rounded-lg text-sm" data-testid={`card-audit-${log.id}`}>
                     <Clock className="h-4 w-4 text-muted-foreground" />
                     <div className="flex-1">
-                      <span className="font-medium">{log.userName}</span>
+                      <span className="font-medium" data-testid={`text-audit-user-${log.id}`}>{log.userName}</span>
                       {' '}
-                      <Badge variant="outline" className="mx-1">{log.action}</Badge>
+                      <Badge variant="outline" className="mx-1" data-testid={`badge-audit-action-${log.id}`}>{log.action}</Badge>
                       {' '}
-                      <span className="text-muted-foreground">{log.entityType}</span>
+                      <span className="text-muted-foreground" data-testid={`text-audit-entity-type-${log.id}`}>{log.entityType}</span>
                       {' - '}
-                      <span className="font-medium">{log.entityName}</span>
+                      <span className="font-medium" data-testid={`text-audit-entity-name-${log.id}`}>{log.entityName}</span>
                     </div>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-xs text-muted-foreground" data-testid={`text-audit-timestamp-${log.id}`}>
                       {format(new Date(log.timestamp), 'PPp')}
                     </span>
                   </div>
                 ))}
                 {(!auditLogs || auditLogs.length === 0) && (
-                  <p className="text-center text-muted-foreground py-8">No audit logs</p>
+                  <p className="text-center text-muted-foreground py-8" data-testid="text-no-audit-logs">No audit logs</p>
                 )}
               </div>
             </CardContent>
@@ -419,9 +419,9 @@ export default function CQCCompliance() {
             </CardHeader>
             <CardContent>
               {expiredTraining.length > 0 && (
-                <Alert variant="destructive" className="mb-4">
+                <Alert variant="destructive" className="mb-4" data-testid="alert-expired-training">
                   <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>
+                  <AlertDescription data-testid="text-expired-training-count">
                     {expiredTraining.length} training certificate(s) have expired
                   </AlertDescription>
                 </Alert>
@@ -431,24 +431,24 @@ export default function CQCCompliance() {
                   <div key={record.id} className="flex items-start justify-between p-4 border rounded-lg" data-testid={`card-training-${record.id}`}>
                     <div className="space-y-1 flex-1">
                       <div className="flex items-center gap-2">
-                        <h4 className="font-semibold">{record.staffName}</h4>
-                        <Badge variant="outline">{record.trainingType}</Badge>
+                        <h4 className="font-semibold" data-testid={`text-training-staff-${record.id}`}>{record.staffName}</h4>
+                        <Badge variant="outline" data-testid={`badge-training-type-${record.id}`}>{record.trainingType}</Badge>
                       </div>
-                      <p className="text-sm text-muted-foreground">Provider: {record.trainingProvider}</p>
+                      <p className="text-sm text-muted-foreground" data-testid={`text-training-provider-${record.id}`}>Provider: {record.trainingProvider}</p>
                       <div className="flex gap-4 text-xs text-muted-foreground">
-                        <span>Completed: {format(new Date(record.completionDate), 'PPP')}</span>
+                        <span data-testid={`text-training-completion-${record.id}`}>Completed: {format(new Date(record.completionDate), 'PPP')}</span>
                         {record.expiryDate && (
-                          <span>Expires: {format(new Date(record.expiryDate), 'PPP')}</span>
+                          <span data-testid={`text-training-expiry-${record.id}`}>Expires: {format(new Date(record.expiryDate), 'PPP')}</span>
                         )}
                       </div>
                     </div>
-                    <Badge variant={getStatusColor(record.status) as any}>
+                    <Badge variant={getStatusColor(record.status) as any} data-testid={`badge-training-status-${record.id}`}>
                       {record.status}
                     </Badge>
                   </div>
                 ))}
                 {(!trainingRecords || trainingRecords.length === 0) && (
-                  <p className="text-center text-muted-foreground py-8">No training records</p>
+                  <p className="text-center text-muted-foreground py-8" data-testid="text-no-training">No training records</p>
                 )}
               </div>
             </CardContent>

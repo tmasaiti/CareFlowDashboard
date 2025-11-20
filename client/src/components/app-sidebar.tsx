@@ -48,7 +48,6 @@ const menuItems = [
     title: "CQC Compliance",
     url: "/cqc-compliance",
     icon: Shield,
-    testId: "link-cqc-compliance",
   },
   {
     title: "Reports",
@@ -88,7 +87,7 @@ export function AppSidebar() {
                   <SidebarMenuButton
                     asChild
                     className={location === item.url ? "bg-sidebar-accent" : ""}
-                    data-testid={`link-${item.title.toLowerCase().replace(' ', '-')}`}
+                    data-testid={`link-${item.title.toLowerCase().replace(/\s+/g, '-')}`}
                   >
                     <Link href={item.url}>
                       <item.icon className="h-4 w-4" />
