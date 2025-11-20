@@ -1,0 +1,83 @@
+Project Croft: Core UI/UX & System Design Guide and Dev Guide
+
+DO NOT Migrate from in-memory/client storage to proper server-side PostgreSQL database
+Continue to use in-memory/client storage
+
+Objective: To establish a consistent, intuitive, and scalable structure for all major modules within the healthcare management system.
+1. Foundational Design Principle: The Consistent Module Pattern
+
+Every core element of the system (Patients, Care Plans, Tasks, Reports, etc.) must adhere to a standardized workflow and page structure. This ensures predictability and ease of use.
+
+The Standard Workflow:
+On-boarding Wizard -> Master List View -> Detailed Tabbed View
+2. Detailed Module Specification
+
+Here is the pattern applied to the Patient module, which will serve as the template for all others.
+
+A. Patient On-boarding Wizard
+    Purpose: A guided, step-by-step process to capture all essential information for a new patient efficiently.
+    Structure:
+
+        Step 1: Patient Demographics (Name, DOB, NHS Number, etc.)
+        Step 2: Contact Details & Address
+        Step 3: Next of Kin / Emergency Contact Information
+        Step 4: Initial Assessment & Consent Forms
+		....
+
+    Outcome: Upon completion, the new patient is created and appears in the Patient List.
+
+B. Patient List View
+    Purpose: The primary dashboard for viewing and accessing all patients.
+    Initial State: Empty, with a clear call-to-action.
+    Key UI Element: A prominent "Add New Patient" button, which launches the On-boarding Wizard.
+    Functionality: A searchable, filterable, and sortable table/grid. Clicking any patient record in this list opens the Patient Details Page.
+
+C. Patient Details Page (Tabbed Interface)
+    Purpose: A comprehensive hub for all information and actions related to a single patient.
+    Mandatory Tabs:
+
+        Overview: A summary dashboard of key patient info, recent activity, and critical alerts.
+        Medical History: A dedicated interface to view, add, edit, and manage medical history entries.
+        Care Plans: A management console to assign, view, and modify Care Plan Templates for this patient.
+        Notes & Communications: A centralized log for all clinical notes, general notes, and internal communications regarding the patient.
+		Alerts & Actions: all system raised alerts and actions
+        CQC Compliance: A focused view tracking compliance-related data, audits, and evidence required for Care Quality Commission standards.
+
+3. Application to Other Modules
+This same pattern must be replicated for:
+    Care Plan Templates:
+	
+        On-boarding Wizard: Step-by-step template creation.
+        List View: Table of all templates with an "Add New" button.
+        Details Page: Tabs for Template Overview, Associated Tasks, Compliance Mapping, etc.
+
+    Tasks & Rota:
+	
+        On-boarding Wizard: A guided form to create a new task/shift.
+        List View: A consolidated view of the rota/task list.
+        Details Page: Tabs for Task Details, Assigned Staff, Completion Status, etc.
+
+    Reports:
+	
+        On-boarding Wizard: A report builder that guides the user through selecting metrics, filters, and format.
+        List View: Saved and previously generated reports.
+        Details Page: Tabs for Viewing Report, Editing Parameters, and Scheduling.
+
+4. Global System Settings
+
+A centralized area for administrative control, following the same tabbed principle for organization.
+    Location: Clearly accessible from the main navigation (e.g., Gear Icon)
+    Tabbed Structure:
+
+        Notifications: Configure alert rules, email/SMS templates, and user preferences.
+        User Management: Add staff, assign roles, and manage permissions.
+        Holidays & Availability: Manage staff leave, set working patterns, and define availability.
+        System Configuration: Broader system settings, integrations, and defaults.
+		DB Backup settings: broader backup settings
+		Audit trail: Date and time-stamped for all system actions
+
+5. Key Non-Functional Requirements
+
+    CQC Compliance: Data models and UI must be designed with CQC evidence requirements in mind from the outset. The "CQC Compliance" tab is a critical component, not an afterthought.
+    Usability: The interface must be clear and easy to navigate for users with varying levels of technical skill.
+    Scalability: The architecture should support the addition of new modules in the future by following the established pattern.
