@@ -1,5 +1,8 @@
 Project Alpha: Core UI/UX & System Design Guide
 
+DO NOT Migrate from in-memory/client storage to proper server-side PostgreSQL database
+Continue to use in-memory/client storage
+
 Objective: To establish a consistent, intuitive, and scalable structure for all major modules within the healthcare management system.
 1. Foundational Design Principle: The Consistent Module Pattern
 
