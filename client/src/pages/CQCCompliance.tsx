@@ -1,10 +1,14 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { db } from "@/lib/db";
+import { db, type RiskAssessment, type SafeguardingIncident, type TrainingRecord } from "@/lib/db";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { RiskAssessmentDialog } from "@/components/RiskAssessmentDialog";
+import { IncidentDialog } from "@/components/IncidentDialog";
+import { TrainingDialog } from "@/components/TrainingDialog";
 import { 
   Shield, 
   AlertTriangle, 
@@ -16,11 +20,18 @@ import {
   Clock,
   FileText,
   Users,
-  AlertCircle
+  AlertCircle,
+  Plus
 } from "lucide-react";
 import { format } from "date-fns";
 
 export default function CQCCompliance() {
+  const [riskDialogOpen, setRiskDialogOpen] = useState(false);
+  const [incidentDialogOpen, setIncidentDialogOpen] = useState(false);
+  const [trainingDialogOpen, setTrainingDialogOpen] = useState(false);
+  const [selectedRisk, setSelectedRisk] = useState<RiskAssessment | undefined>();
+  const [selectedIncident, setSelectedIncident] = useState<SafeguardingIncident | undefined>();
+  const [selectedTraining, setSelectedTraining] = useState<TrainingRecord | undefined>();
   const { data: riskAssessments } = useQuery({
     queryKey: ['/compliance/risk-assessments'],
     queryFn: async () => await db.riskAssessments.toArray()
@@ -247,10 +258,18 @@ export default function CQCCompliance() {
         <TabsContent value="risks" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Risk Assessments</CardTitle>
-              <CardDescription>
-                Active risk assessments requiring review and mitigation
-              </CardDescription>
+              <div className="flex justify-between items-center">
+                <div>
+                  <CardTitle>Risk Assessments</CardTitle>
+                  <CardDescription>
+                    Active risk assessments requiring review and mitigation
+                  </CardDescription>
+                </div>
+                <Button onClick={() => { setSelectedRisk(undefined); setRiskDialogOpen(true); }} data-testid="button-create-risk">
+                  <Plus className="h-4 w-4 mr-2" />
+                  New Assessment
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               {overdueRisks.length > 0 && (
@@ -263,7 +282,12 @@ export default function CQCCompliance() {
               )}
               <div className="space-y-3">
                 {riskAssessments?.map((risk) => (
-                  <div key={risk.id} className="flex items-start justify-between p-4 border rounded-lg" data-testid={`card-risk-${risk.id}`}>
+                  <div 
+                    key={risk.id} 
+                    className="flex items-start justify-between p-4 border rounded-lg hover-elevate cursor-pointer" 
+                    onClick={() => { setSelectedRisk(risk); setRiskDialogOpen(true); }}
+                    data-testid={`card-risk-${risk.id}`}
+                  >
                     <div className="space-y-1 flex-1">
                       <div className="flex items-center gap-2">
                         <h4 className="font-semibold" data-testid={`text-risk-patient-${risk.id}`}>{risk.patientName}</h4>
@@ -294,15 +318,28 @@ export default function CQCCompliance() {
         <TabsContent value="incidents" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Safeguarding Incidents</CardTitle>
-              <CardDescription>
-                Incident reports and investigations
-              </CardDescription>
+              <div className="flex justify-between items-center">
+                <div>
+                  <CardTitle>Safeguarding Incidents</CardTitle>
+                  <CardDescription>
+                    Incident reports and investigations
+                  </CardDescription>
+                </div>
+                <Button onClick={() => { setSelectedIncident(undefined); setIncidentDialogOpen(true); }} data-testid="button-create-incident">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Report Incident
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
                 {incidents?.map((incident) => (
-                  <div key={incident.id} className="flex items-start justify-between p-4 border rounded-lg" data-testid={`card-incident-${incident.id}`}>
+                  <div 
+                    key={incident.id} 
+                    className="flex items-start justify-between p-4 border rounded-lg hover-elevate cursor-pointer" 
+                    onClick={() => { setSelectedIncident(incident); setIncidentDialogOpen(true); }}
+                    data-testid={`card-incident-${incident.id}`}
+                  >
                     <div className="space-y-1 flex-1">
                       <div className="flex items-center gap-2">
                         <h4 className="font-semibold" data-testid={`text-incident-type-${incident.id}`}>{incident.incidentType}</h4>
@@ -412,10 +449,18 @@ export default function CQCCompliance() {
         <TabsContent value="training" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Staff Training Records</CardTitle>
-              <CardDescription>
-                Training compliance and certification status
-              </CardDescription>
+              <div className="flex justify-between items-center">
+                <div>
+                  <CardTitle>Staff Training Records</CardTitle>
+                  <CardDescription>
+                    Training compliance and certification status
+                  </CardDescription>
+                </div>
+                <Button onClick={() => { setSelectedTraining(undefined); setTrainingDialogOpen(true); }} data-testid="button-create-training">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Training
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               {expiredTraining.length > 0 && (
@@ -428,7 +473,12 @@ export default function CQCCompliance() {
               )}
               <div className="space-y-3">
                 {trainingRecords?.map((record) => (
-                  <div key={record.id} className="flex items-start justify-between p-4 border rounded-lg" data-testid={`card-training-${record.id}`}>
+                  <div 
+                    key={record.id} 
+                    className="flex items-start justify-between p-4 border rounded-lg hover-elevate cursor-pointer" 
+                    onClick={() => { setSelectedTraining(record); setTrainingDialogOpen(true); }}
+                    data-testid={`card-training-${record.id}`}
+                  >
                     <div className="space-y-1 flex-1">
                       <div className="flex items-center gap-2">
                         <h4 className="font-semibold" data-testid={`text-training-staff-${record.id}`}>{record.staffName}</h4>
@@ -455,6 +505,33 @@ export default function CQCCompliance() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      <RiskAssessmentDialog
+        open={riskDialogOpen}
+        onOpenChange={(open) => {
+          setRiskDialogOpen(open);
+          if (!open) setSelectedRisk(undefined);
+        }}
+        assessment={selectedRisk}
+      />
+
+      <IncidentDialog
+        open={incidentDialogOpen}
+        onOpenChange={(open) => {
+          setIncidentDialogOpen(open);
+          if (!open) setSelectedIncident(undefined);
+        }}
+        incident={selectedIncident}
+      />
+
+      <TrainingDialog
+        open={trainingDialogOpen}
+        onOpenChange={(open) => {
+          setTrainingDialogOpen(open);
+          if (!open) setSelectedTraining(undefined);
+        }}
+        training={selectedTraining}
+      />
     </div>
   );
 }
