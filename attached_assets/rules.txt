@@ -1,7 +1,4 @@
-Project Croft: Core UI/UX & System Design Guide and Dev Guide
-
-DO NOT Migrate from in-memory/client storage to proper server-side PostgreSQL database
-Continue to use in-memory/client storage
+Project Alpha: Core UI/UX & System Design Guide
 
 Objective: To establish a consistent, intuitive, and scalable structure for all major modules within the healthcare management system.
 1. Foundational Design Principle: The Consistent Module Pattern
@@ -9,78 +6,123 @@ Objective: To establish a consistent, intuitive, and scalable structure for all 
 Every core element of the system (Patients, Care Plans, Tasks, Reports, etc.) must adhere to a standardized workflow and page structure. This ensures predictability and ease of use.
 
 The Standard Workflow:
-On-boarding Wizard -> Master List View -> Detailed Tabbed View
-2. Detailed Module Specification
+On-boarding Wizard → Master List View → Detailed Tabbed View
+2. Data Persistence Specification
+
+    Primary Strategy: All application data (Patients, Care Plans, Tasks, etc.) must be persisted client-side using the browser's In-Memory storage (e.g., JavaScript variables, Redux store, Vuex) for immediate UI responsiveness.
+
+    Secondary Persistence: A client-side database (e.g., IndexedDB or browser LocalStorage) must be used as the persistent layer to retain data across browser sessions. This simulates a backend database without requiring server infrastructure at this stage.
+
+    Data Flow: User interactions update the in-memory store → The UI re-renders instantly → Changes are asynchronously synced to the client-side database.
+
+    Rationale: This architecture provides a seamless user experience and a fully functional prototype. The data layer must be abstracted to facilitate a future transition to a server-based API.
+
+3. Detailed Module Specification
 
 Here is the pattern applied to the Patient module, which will serve as the template for all others.
 
 A. Patient On-boarding Wizard
+
     Purpose: A guided, step-by-step process to capture all essential information for a new patient efficiently.
+
+    Data Flow: Form data is held in the component's state → On completion, a new Patient object is committed to the in-memory store and persisted to IndexedDB/LocalStorage.
+
     Structure:
 
         Step 1: Patient Demographics (Name, DOB, NHS Number, etc.)
+
         Step 2: Contact Details & Address
+
         Step 3: Next of Kin / Emergency Contact Information
+
         Step 4: Initial Assessment & Consent Forms
-		....
 
     Outcome: Upon completion, the new patient is created and appears in the Patient List.
 
 B. Patient List View
+
     Purpose: The primary dashboard for viewing and accessing all patients.
+
+    Data Source: Populated by reading from the in-memory store (which is hydrated from IndexedDB on application load).
+
     Initial State: Empty, with a clear call-to-action.
+
     Key UI Element: A prominent "Add New Patient" button, which launches the On-boarding Wizard.
+
     Functionality: A searchable, filterable, and sortable table/grid. Clicking any patient record in this list opens the Patient Details Page.
 
 C. Patient Details Page (Tabbed Interface)
+
     Purpose: A comprehensive hub for all information and actions related to a single patient.
+
+    Data Source: All data is fetched from the in-memory store using the patient's ID.
+
     Mandatory Tabs:
 
         Overview: A summary dashboard of key patient info, recent activity, and critical alerts.
-        Medical History: A dedicated interface to view, add, edit, and manage medical history entries.
+
+        Medical History: A dedicated interface to view, add, edit, and manage medical history entries. All CRUD operations must update the in-memory store and persist to the client-side DB.
+
         Care Plans: A management console to assign, view, and modify Care Plan Templates for this patient.
+
         Notes & Communications: A centralized log for all clinical notes, general notes, and internal communications regarding the patient.
-		Alerts & Actions: all system raised alerts and actions
+
         CQC Compliance: A focused view tracking compliance-related data, audits, and evidence required for Care Quality Commission standards.
 
-3. Application to Other Modules
-This same pattern must be replicated for:
+4. Application to Other Modules
+
+This same pattern must be replicated for all modules, adhering to the client-side data persistence strategy:
+
     Care Plan Templates:
-	
+
         On-boarding Wizard: Step-by-step template creation.
+
         List View: Table of all templates with an "Add New" button.
+
         Details Page: Tabs for Template Overview, Associated Tasks, Compliance Mapping, etc.
 
     Tasks & Rota:
-	
+
         On-boarding Wizard: A guided form to create a new task/shift.
+
         List View: A consolidated view of the rota/task list.
+
         Details Page: Tabs for Task Details, Assigned Staff, Completion Status, etc.
 
     Reports:
-	
+
         On-boarding Wizard: A report builder that guides the user through selecting metrics, filters, and format.
+
         List View: Saved and previously generated reports.
+
         Details Page: Tabs for Viewing Report, Editing Parameters, and Scheduling.
 
-4. Global System Settings
+5. Global System Settings
 
-A centralized area for administrative control, following the same tabbed principle for organization.
-    Location: Clearly accessible from the main navigation (e.g., Gear Icon)
+A centralized area for administrative control, following the same tabbed principle and data persistence strategy.
+
+    Location: Clearly accessible from the main navigation (e.g., Gear Icon).
+
+    Data Persistence: All configuration settings (e.g., notification rules, user roles) must be stored in and retrieved from the client-side database.
+
     Tabbed Structure:
 
         Notifications: Configure alert rules, email/SMS templates, and user preferences.
-        User Management: Add staff, assign roles, and manage permissions.
-        Holidays & Availability: Manage staff leave, set working patterns, and define availability.
-        System Configuration: Broader system settings, integrations, and defaults.
-		DB Backup settings: broader backup settings
-		Audit trail: Date and time-stamped for all system actions
 
-5. Error Handling & Logging Protocol
+        User Management: Add staff, assign roles, and manage permissions.
+
+        Holidays & Availability: Manage staff leave, set working patterns, and define availability.
+
+        System Configuration: Broader system settings, integrations, and defaults.
+
+6. Error Handling & Logging Protocol
+
 To ensure efficient debugging and avoid token-wasting loops, the following mandatory procedure must be implemented for every error or issue encountered.
+
 A. Mandatory Log File Creation
 
     A file named fixes.txt must be created and maintained in the project's root directory.
+
     Every single error, issue, or user feedback must be logged as a new, timestamped entry in this file.
 
 B. Structured Log Entry Format
@@ -96,19 +138,32 @@ text
 ---
 
 C. Critical Workflow Rules to Prevent Loops
+
     Analysis Before Action: Upon encountering an error, you must first pause and analyze its root cause. Do not immediately start making code changes.
-	Consult fixes.txt to see if the problem has been encountered before and effective fixes applied previously
+
     Scope Assessment is Mandatory: You must explicitly classify the error as:
-        GLOBAL: If the issue stems from a foundational component (e.g., the main layout, a shared React component, a core CSS class, a base API function). Fixing it here will apply to all modules.
+
+        GLOBAL: If the issue stems from a foundational component (e.g., the data persistence layer, a shared state management function, a core UI component). Fixing it here will apply to all modules.
+
         LOCAL: If the issue is confined to a single, specific feature, page, or function.
+
     Plan and Execute the Fix Holistically:
+
         For a GLOBAL issue, you must identify all other areas in the codebase that might be affected by the same problem and fix them in the same action. Update the log entry's ACTION TAKEN to reflect this comprehensive fix.
+
         For a LOCAL issue, apply a targeted fix.
 
     Single Attempt Principle: After implementing the fix, you must verify its success. If the issue is not resolved, do not enter a blind debugging loop. Re-analyze the problem, update the fixes.txt log with the new findings, and then proceed with a revised, informed fix.
+
     Clarity Over Speed: A well-documented, correct fix is always preferable to a quick, poorly-understood one that may cause further issues.
 
-6. Key Non-Functional Requirements
+7. Key Non-Functional Requirements
+
     CQC Compliance: Data models and UI must be designed with CQC evidence requirements in mind from the outset. The "CQC Compliance" tab is a critical component, not an afterthought.
+
     Usability: The interface must be clear and easy to navigate for users with varying levels of technical skill.
+
     Scalability: The architecture should support the addition of new modules in the future by following the established pattern.
+
+    Maintainability: Code must be clean, well-commented, and all changes must be tracked in fixes.txt for future reference. The data persistence layer must be abstracted for easy future migration.
+
