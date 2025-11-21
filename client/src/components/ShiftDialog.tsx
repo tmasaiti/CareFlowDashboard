@@ -284,12 +284,12 @@ export function ShiftDialog({ open, onOpenChange, shift, selectedDate }: ShiftDi
 
             <div className="space-y-2">
               <Label htmlFor="patient">Patient (Optional)</Label>
-              <Select value={formData.patientId} onValueChange={(value) => setFormData({ ...formData, patientId: value })}>
+              <Select value={formData.patientId || "none"} onValueChange={(value) => setFormData({ ...formData, patientId: value === "none" ? "" : value })}>
                 <SelectTrigger data-testid="select-patient">
                   <SelectValue placeholder="Select patient (optional)" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">None</SelectItem>
+                  <SelectItem value="none">None</SelectItem>
                   {patients?.map((p) => (
                     <SelectItem key={p.id} value={p.id}>
                       {p.firstName} {p.lastName}
